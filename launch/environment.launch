@@ -1,0 +1,9 @@
+<launch>
+<!-- mongodb_store -->
+  <param name="mongodb_use_daemon" value="true" />
+  <param name="mongodb_host" value="localhost" />
+  <param name="mongodb_port" value="27017" />
+  <node name="message_store" pkg="mongodb_store" type="message_store_node.py" output="screen" /> 
+  
+  <node name="click_server" pkg="web_navigation" type="click_server.py"/>
+</launch>

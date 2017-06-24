@@ -1,0 +1,138 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/ros-websocket/ros-websocket.html">
+<link rel="import" href="../../bower_components/ros-topic/ros-topic.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="position-manager-frontend-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <ros-websocket auto
+      ros="{{ros}}"
+      on-connection="handleConnection"
+      on-close="handleClose"
+      on-error="handleError">
+    </ros-websocket>
+    <ros-topic
+      auto
+      last-message="{{poseList}}"
+      on-message="handlePoseList"
+      topic="/web_navigation/latched_position_names"
+      ros="{{ros}}"
+      msg-type="web_navigation/NameList"
+    ></ros-topic>
+
+    <ros-topic
+      auto
+      id="saveCurrentTopic"
+      topic="/web_navigation_click/save_current"
+      ros="{{ros}}"
+      msg-type="std_msgs/String"
+    ></ros-topic>
+
+    <ros-topic
+      auto
+      id="goToTopic"
+      topic="/web_navigation_click/go_to_name"
+      ros="{{ros}}"
+      msg-type="std_msgs/String"
+    ></ros-topic>
+
+    <ros-topic
+      auto
+      id="deleteTopic"
+      topic="/web_navigation_click/delete_name"
+      ros="{{ros}}"
+      msg-type="std_msgs/String"
+    ></ros-topic>
+
+    <ros-topic
+      auto
+      id="goToPointTopic"
+      topic="/web_navigation_click/go_to_point"
+      ros="{{ros}}"
+      msg-type="geometry_msgs/Point"
+    ></ros-topic>
+
+    <h2>Hello [[prop1]]</h2>
+    <div>
+      Websocket status: {{status}}
+    </div>
+    <h3>Poses</h2>
+    <template is="dom-repeat" items="{{poseList.name_list}}">
+      <div>
+      {{item}}
+      <paper-button raised on-tap="goToPose" data-name$="{{item}}">Go To</paper-button>  
+      <paper-button raised on-tap="deletePose" data-name$="{{item}}">Delete</paper-button>  
+      </div>
+    </template>
+ 
+  <paper-input id="name" label="Position Name: "></paper-input>
+  <paper-button raised on-tap="saveCurrent">Save Current</paper-button>
+  
+  <paper-input id="target_x" type="number" label="X: "></paper-input>
+  <paper-input id="target_y" type="number" label="Y: "></paper-input>
+  <paper-button raised on-tap="goToPoint">Go to (X, Y)</paper-button>
+
+  </template>
+  <script>
+    Polymer({
+
+      is: 'position-manager-frontend-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'position-manager-frontend-app',
+        },
+      },
+      properties: {
+        status: {
+          type: String,
+          value: 'Unknown',
+        },   
+      },
+
+      handleConnection: function() {
+        this.status = 'Connected to the websocket server.';
+      },
+
+      handleClose: function() {
+        this.status = 'Closed connection to websocket server.';
+      },
+
+      handleError: function() {
+        this.status = 'Error connecting to websocket server.';
+      },
+      handlePoseList: function(evt) {
+        var msg = evt.detail;
+        console.log(msg);
+      },
+      saveCurrent: function() {
+        console.log('sending saveCurrent as:', this.$.name.value);
+        this.$.saveCurrentTopic.publish({data: this.$.name.value});
+      },
+      goToPose: function(bttn) {
+        var toName = bttn.target.getAttribute('data-name');
+        console.log(bttn.target.dataset);
+        console.log('sending goTo:', toName);
+        this.$.goToTopic.publish({data: toName});
+      },
+      deletePose: function(bttn) {
+        var toName = bttn.target.getAttribute('data-name');
+        console.log(bttn.target.dataset);
+        console.log('sending delete:', toName);
+        this.$.deleteTopic.publish({data: toName});
+      },
+      goToPoint: function() {
+        console.log('sending goToPoint:',parseFloat(this.$.target_x.value), parseFloat(this.$.target_y.value));
+        this.$.goToPointTopic.publish({x: parseFloat(this.$.target_x.value), y: parseFloat(this.$.target_y.value), z: 0.0});
+      },
+
+    });
+  </script>
+</dom-module>

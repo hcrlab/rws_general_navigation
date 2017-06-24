@@ -1,0 +1,7 @@
+{
+  "name": "position-manager-frontend",
+  "short_name": "position-manager-frontend",
+  "description": "provides topics to interface with the robots navigation",
+  "start_url": "/",
+  "display": "standalone"
+}

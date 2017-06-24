@@ -1,0 +1,17 @@
+{
+  "name": "position-manager-frontend",
+  "description": "provides topics to interface with the robots navigation",
+  "main": "index.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.9.0",
+    "ros-topic": "jstnhuang/ros-topic#^1.0.0",
+    "ros-websocket": "jstnhuang/ros-websocket#^3.0.1",
+    "paper-input": "^2.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
